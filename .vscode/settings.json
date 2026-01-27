@@ -6,7 +6,8 @@
     // Show both environments in the status bar
     "platformio-ide.activateOnlyOnPlatformIOProject": true,
     
-    // Auto-build on save (optional)
+    // Auto-build on save (disabled by default to save resources)
+    // Set to true if you want automatic rebuild on file save
     "platformio-ide.autoRebuild": false,
     
     // Serial monitor settings
