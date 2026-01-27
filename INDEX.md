@@ -8,6 +8,8 @@ This firmware supports **two STM32 boards**:
 
 📥 **[DOWNLOAD_SETUP.md](DOWNLOAD_SETUP.md)** - **START HERE** to download and set up both projects on your PC with Visual Studio Code / PlatformIO
 
+⚡ **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Quick commands and cheat sheet for both environments
+
 ## 📋 Quick Navigation
 
 ### 🔴 **START HERE** (Pick Your Path)
