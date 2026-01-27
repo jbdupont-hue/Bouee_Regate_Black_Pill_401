@@ -94,14 +94,34 @@ A **complete, production-ready firmware** for an autonomous buoy system has been
 ### Step 1: Review Documentation (5 min)
 Start with [INDEX.md](INDEX.md) or [QUICKSTART.md](QUICKSTART.md)
 
+### Step 1: Choose Your Board
+
+This project supports two STM32 boards:
+- **STM32F401CB Black Pill** (recommended): 84 MHz, 128KB Flash
+- **STM32F405RG**: 168 MHz, 1024KB Flash (more resources)
+
 ### Step 2: Build (1 min)
+
+For **STM32F401CB**:
 ```bash
 platformio run -e genericSTM32F401CB
 ```
 
+For **STM32F405RG**:
+```bash
+platformio run -e genericSTM32F405RG
+```
+
 ### Step 3: Upload (2 min)
+
+For **STM32F401CB**:
 ```bash
 platformio run -t upload -e genericSTM32F401CB
+```
+
+For **STM32F405RG**:
+```bash
+platformio run -t upload -e genericSTM32F405RG
 ```
 
 ### Step 4: Monitor (ongoing)
@@ -200,8 +220,8 @@ Bouee_Regate_Black_Pill_401/
 
 ### Short-term (Today)
 1. ✅ Connect hardware (GPS, compass, receiver, motors)
-2. ✅ Build: `platformio run -e genericSTM32F401CB`
-3. ✅ Upload: `platformio run -t upload -e genericSTM32F401CB`
+2. ✅ Build: `platformio run -e genericSTM32F401CB` or `platformio run -e genericSTM32F405RG`
+3. ✅ Upload: `platformio run -t upload -e genericSTM32F401CB` (or `-e genericSTM32F405RG`)
 4. ✅ Monitor: `platformio device monitor -b 115200`
 
 ### Medium-term (This week)

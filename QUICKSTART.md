@@ -46,14 +46,58 @@ Motors (ESC) → PWM Outputs (PB6, PB7)
 Telemetry (SIK) → USART3 (optional, or USART2)
 ```
 
+## Supported Hardware
+
+This firmware supports two STM32 board options:
+
+### Option 1: STM32F401CB Black Pill (Recommended)
+- **CPU**: 84 MHz ARM Cortex-M4
+- **Flash**: 128KB
+- **RAM**: 64KB
+- **Environment**: `genericSTM32F401CB`
+- Best for standard deployments
+
+### Option 2: STM32F405RG
+- **CPU**: 168 MHz ARM Cortex-M4
+- **Flash**: 1024KB (1MB)
+- **RAM**: 192KB
+- **Environment**: `genericSTM32F405RG`
+- Use for advanced features or extra resources
+
+## 60-Second Setup
+
+### 1. Connect Hardware
+```
+ST-Link V2 → STM32F401/F405
+GPS (L80-R) → USART1 (PA9/PA10)
+Compass (HMC5883) → I2C1 (PB8/PB9)
+Receiver (FRIA6B) → PPM Input (PA0)
+Motors (ESC) → PWM Outputs (PB6, PB7)
+Telemetry (SIK) → USART3 (optional, or USART2)
+```
+
 ### 2. Build
+
+For **STM32F401CB** (default):
 ```bash
 platformio run -e genericSTM32F401CB
 ```
 
+For **STM32F405RG**:
+```bash
+platformio run -e genericSTM32F405RG
+```
+
 ### 3. Upload
+
+For **STM32F401CB**:
 ```bash
 platformio run -t upload -e genericSTM32F401CB
+```
+
+For **STM32F405RG**:
+```bash
+platformio run -t upload -e genericSTM32F405RG
 ```
 
 ### 4. Monitor

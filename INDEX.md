@@ -1,14 +1,31 @@
 # Autonomous Buoy Firmware - Project Index
 
+## 🎯 Two Board Options Available
+
+This firmware supports **two STM32 boards**:
+- **STM32F401CB Black Pill** (84 MHz, 128KB Flash) - Default
+- **STM32F405RG** (168 MHz, 1024KB Flash) - Advanced
+
+📥 **[DOWNLOAD_SETUP.md](DOWNLOAD_SETUP.md)** - **START HERE** to download and set up both projects on your PC with Visual Studio Code / PlatformIO
+
 ## 📋 Quick Navigation
 
 ### 🔴 **START HERE** (Pick Your Path)
+
+#### I want to download this to my PC
+→ [DOWNLOAD_SETUP.md](DOWNLOAD_SETUP.md) (15 min read)
+- How to download/clone the repository
+- Setting up in VS Code with PlatformIO
+- Building for either STM32F401CB or STM32F405RG
+- Uploading to your board
+- Troubleshooting setup issues
 
 #### I'm building this for the first time
 → [QUICKSTART.md](QUICKSTART.md) (10 min read)
 - 60-second setup instructions
 - Component checklist
 - First-time testing procedures
+- Both board options explained
 
 #### I want to understand the system design
 → [ARCHITECTURE.md](ARCHITECTURE.md) (15 min read)

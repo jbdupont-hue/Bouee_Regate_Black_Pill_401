@@ -1,0 +1,14 @@
+{
+    // PlatformIO default environment
+    // Change this to switch between STM32F401CB and STM32F405RG
+    "platformio-ide.defaultEnvironment": "genericSTM32F401CB",
+    
+    // Show both environments in the status bar
+    "platformio-ide.activateOnlyOnPlatformIOProject": true,
+    
+    // Auto-build on save (optional)
+    "platformio-ide.autoRebuild": false,
+    
+    // Serial monitor settings
+    "platformio-ide.serialMonitorBaudRate": 115200
+}

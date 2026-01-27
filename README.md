@@ -1,6 +1,12 @@
-# Autonomous Buoy Firmware - STM32F401
+# Autonomous Buoy Firmware - STM32F401/F405
 
 Complete firmware implementation for an autonomous buoy system with GPS navigation, compass-based heading control, water current estimation, and manual override.
+
+**🎯 NEW**: This project now supports **two STM32 board options**:
+- **STM32F401CB Black Pill** (84 MHz, 128KB Flash) - Recommended
+- **STM32F405RG** (168 MHz, 1024KB Flash) - For advanced applications
+
+📥 **[Download and Setup Guide](DOWNLOAD_SETUP.md)** - Complete instructions for downloading to your PC and building both projects
 
 ## Project Structure
 
@@ -133,14 +139,46 @@ Run magnetometer calibration routine before field deployment.
 - PlatformIO CLI or VS Code + PlatformIO extension
 - ST-Link v2 debugger connected
 
+### Supported Boards
+This project supports two STM32 board variants:
+
+1. **STM32F401CB Black Pill** (Default)
+   - 84 MHz CPU, 128KB Flash, 64KB RAM
+   - Recommended for standard deployments
+   - Environment: `genericSTM32F401CB`
+
+2. **STM32F405RG**
+   - 168 MHz CPU, 1024KB Flash, 192KB RAM
+   - Higher performance with more resources
+   - Environment: `genericSTM32F405RG`
+
 ### Build
+
+For **STM32F401CB** (default):
 ```bash
 platformio run -e genericSTM32F401CB
 ```
 
+For **STM32F405RG**:
+```bash
+platformio run -e genericSTM32F405RG
+```
+
+Or build both environments:
+```bash
+platformio run
+```
+
 ### Upload
+
+For **STM32F401CB**:
 ```bash
 platformio run -t upload -e genericSTM32F401CB
+```
+
+For **STM32F405RG**:
+```bash
+platformio run -t upload -e genericSTM32F405RG
 ```
 
 ### Monitor Serial Output
