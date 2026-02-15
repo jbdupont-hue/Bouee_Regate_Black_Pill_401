@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "../../test_stm32"
+		},
+		{
+			"name": "Bouee_Regate_Blue_Pill",
+			"path": "../../Bouee_Regate_Blue_Pill"
+		},
+		{
+			"name": "BOUEE_REGATE_BLACK_PILL_401_IST3810",
+			"path": ".."
+		},
+		{
+			"name": "Bouee_Regate_STM32F405",
+			"path": "../../Bouee_Regate_STM32F405"
+		}
+	],
+	"settings": {}
+}
