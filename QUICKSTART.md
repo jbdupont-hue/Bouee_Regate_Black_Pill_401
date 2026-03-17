@@ -170,6 +170,60 @@ Buoy moves directly with stick inputs
 
 ## Tuning Guide
 
+### On-Water Test Matrix (3 Parameter Sets)
+
+Use this sequence in order (A → B → C). For each set:
+1. Edit values in `include/config.h`
+2. Build/upload firmware
+3. Run **2 tests**:
+  - **Manual straight test**: 20-30 m forward with steering stick centered
+  - **Autonomous hold test**: hold position for 2-3 min and watch for spinning
+
+Record:
+- Left/right drift in manual mode (none / slight / strong)
+- Spin tendency at hold point (none / occasional / continuous)
+- Motor twitching near target (low / medium / high)
+
+#### Set A - Baseline Stable
+```cpp
+#define MANUAL_STEER_TRIM_US 0
+#define MANUAL_GYRO_STRAIGHT_GAIN 1.6f
+#define MANUAL_STRAIGHT_MAX_YAW_CORR 70
+#define MANUAL_STRAIGHT_MIN_THROTTLE 40
+
+#define AUTO_HOLD_HEADING_DEADBAND_DEG 8.0f
+#define AUTO_HOLD_NEAR_YAW_LIMIT 35.0f
+#define YAW_RATE_GAIN_CALM 1.0f
+```
+
+#### Set B - Straight-Line Priority (Manual)
+```cpp
+#define MANUAL_STEER_TRIM_US 10
+#define MANUAL_GYRO_STRAIGHT_GAIN 2.1f
+#define MANUAL_STRAIGHT_MAX_YAW_CORR 110
+#define MANUAL_STRAIGHT_MIN_THROTTLE 30
+
+#define AUTO_HOLD_HEADING_DEADBAND_DEG 8.0f
+#define AUTO_HOLD_NEAR_YAW_LIMIT 35.0f
+#define YAW_RATE_GAIN_CALM 1.0f
+```
+
+#### Set C - Anti-Spin Priority (Autonomous)
+```cpp
+#define MANUAL_STEER_TRIM_US 10
+#define MANUAL_GYRO_STRAIGHT_GAIN 1.8f
+#define MANUAL_STRAIGHT_MAX_YAW_CORR 90
+#define MANUAL_STRAIGHT_MIN_THROTTLE 35
+
+#define AUTO_HOLD_HEADING_DEADBAND_DEG 10.0f
+#define AUTO_HOLD_NEAR_YAW_LIMIT 25.0f
+#define YAW_RATE_GAIN_CALM 1.3f
+```
+
+Acceptance criteria:
+- Keep the first set that gives both: (1) manual centered-stick run with only slight drift, and (2) autonomous hold without persistent spin for at least 2 minutes.
+- If drift direction is always the same, keep the best set and fine-trim only `MANUAL_STEER_TRIM_US` by ±5 until centered.
+
 ### If Buoy Overshoots Target
 **Problem**: Buoy oscillates around target  
 **Solution**: Reduce gains in `config.h`

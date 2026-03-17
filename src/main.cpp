@@ -448,14 +448,17 @@ void autonomousMode() {
     // Strong current detected - head upstream to compensate
     float upstreamBearing = fmod(control.getCurrentDirection() + 180.0, 360.0);
     float weight = constrain(control.getCurrentStrength() / 3.0, 0.0, 1.0);
-    desiredBearing = (1.0 - weight) * bearing + weight * upstreamBearing;
+    float blendError = control.headingError(upstreamBearing, bearing);
+    desiredBearing = bearing + weight * blendError;
+    if (desiredBearing < 0.0f) desiredBearing += 360.0f;
+    if (desiredBearing >= 360.0f) desiredBearing -= 360.0f;
   }
   
   // Calculate heading error
   float error = control.headingError(desiredBearing, heading);
   
   // Apply deadband
-  if (abs(error) < 5.0) {
+  if (abs(error) < AUTO_HOLD_HEADING_DEADBAND_DEG) {
     error = 0.0;
   }
   
@@ -477,9 +480,20 @@ void autonomousMode() {
   yawCmd = constrain(yawCmd, -MAX_YAW, MAX_YAW);
   
   // Calculate thrust based on distance
-  float thrust = constrain(distance * control.getParameters().distanceGain * 80, 
-                           control.getParameters().minThrust, 
-                           control.getParameters().maxThrust);
+  float thrust = 0.0f;
+  float softBandLimit = holdRadius + AUTO_HOLD_SOFT_BAND_M;
+  if (distance < softBandLimit) {
+    float proximityScale = constrain((distance - holdRadius) / AUTO_HOLD_SOFT_BAND_M, 0.0f, 1.0f);
+    thrust = distance * control.getParameters().distanceGain * 80.0f * proximityScale;
+    yawCmd = constrain(yawCmd, -AUTO_HOLD_NEAR_YAW_LIMIT, AUTO_HOLD_NEAR_YAW_LIMIT);
+    yawCmd *= (0.35f + 0.65f * proximityScale);
+  } else {
+    thrust = constrain(distance * control.getParameters().distanceGain * 80.0f,
+                       control.getParameters().minThrust,
+                       control.getParameters().maxThrust);
+  }
+
+  thrust = constrain(thrust, 0.0f, control.getParameters().maxThrust);
   
   // Apply motor commands
   motors.drive((int)thrust, (int)yawCmd);
@@ -491,9 +505,35 @@ void manualMode() {
   uint16_t throttleRC = receiver.getThrottle();
   uint16_t steerRC = receiver.getSteer();
   
-  // Convert RC values to control commands
-  int throttle = map(throttleRC, RC_MIN, RC_MAX, -500, 500);
-  int yaw = map(steerRC, RC_MIN, RC_MAX, -500, 500);
+  // Apply dead band to throttle
+  int throttle = 0;
+  if (abs(throttleRC - RC_NEUTRAL) > RC_DEADBAND) {
+    throttle = map(throttleRC, RC_MIN, RC_MAX, -MANUAL_MAX_RANGE, MANUAL_MAX_RANGE);
+  }
+  
+  // Apply dead band to steering
+  int yaw = 0;
+  int steerDelta = (int)steerRC - RC_NEUTRAL - MANUAL_STEER_TRIM_US;
+  if (abs(steerDelta) > RC_DEADBAND) {
+    float steerSign = (steerDelta >= 0) ? 1.0f : -1.0f;
+    float steerMagnitude = (float)(abs(steerDelta) - RC_DEADBAND) / (500.0f - RC_DEADBAND);
+    steerMagnitude = constrain(steerMagnitude, 0.0f, 1.0f);
+    float shapedMagnitude = powf(steerMagnitude, MANUAL_STEER_EXPO);
+    yaw = (int)(steerSign * shapedMagnitude * MANUAL_MAX_YAW_RANGE);
+  }
+
+  // Straight-line assist: when steering stick is centered, use gyro damping to resist unwanted yaw drift
+  if (abs(steerDelta) <= RC_DEADBAND &&
+      abs(throttle) >= MANUAL_STRAIGHT_MIN_THROTTLE &&
+      gyroManager.isReady()) {
+    float yawRate = gyroManager.getYawRate();
+    int yawCorrection = (int)constrain(-yawRate * MANUAL_GYRO_STRAIGHT_GAIN,
+                                       -MANUAL_STRAIGHT_MAX_YAW_CORR,
+                                       MANUAL_STRAIGHT_MAX_YAW_CORR);
+    yaw += yawCorrection;
+  }
+
+  yaw = constrain(yaw, -MANUAL_MAX_YAW_RANGE, MANUAL_MAX_YAW_RANGE);
   
   // Apply motor commands
   motors.drive(throttle, yaw);
@@ -525,13 +565,14 @@ void estimateWaterCurrent() {
     
     // After sufficient time has passed, calculate drift
     if (millis() - driftStartTime >= CURRENT_SAMPLE_TIME_MS) {
+      float elapsedSec = (millis() - driftStartTime) / 1000.0f;
       float driftDistance = TinyGPSPlus::distanceBetween(driftStartLat, driftStartLon, 
                                                          currentLat, currentLon);
       float driftDirection = TinyGPSPlus::courseTo(driftStartLat, driftStartLon, 
                                                    currentLat, currentLon);
       
       // Current strength in m/s
-      float currentStrength = driftDistance / ((CURRENT_SAMPLE_TIME_MS / 1000.0) / 1000.0);
+      float currentStrength = (elapsedSec > 0.0f) ? (driftDistance / elapsedSec) : 0.0f;
       
       control.updateCurrentEstimate(currentStrength, driftDirection, true);
       

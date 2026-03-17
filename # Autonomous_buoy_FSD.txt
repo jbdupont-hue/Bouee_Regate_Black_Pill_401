@@ -7,20 +7,19 @@
 [] The radio transmitter can then be powered off, the buoy then stays in position
 [] Once the radio transmitter is back on, the user can switch to manual mode either to reach a new position or to return to home manually
 [] The buoy evolves either in calm waters, some water current, or in strong water current.
-[] The user uses a 3 position switch to adapt the behavior of the buoy depending on current level. Default is calm waters.
+[] The user use a 3 position switch to adapt the behavior of the buoy depending on current level. Default is calm waters.
 ## platform
 [] STM32F401
 [] GPS QUECTEL L80-R (RX,TX)
 [] Compass IST8310
 [] Gyroscope ICM42688P
-[] HC12 are used for telemetry transmission (38400 bauds)
-[] OSD AT7456E (unused in this version)
+[] OSD AT7456E
 [] Receiver flysky FRIA6B
 [] ESC starboard
 [] ESC port
 [] brushless starboard motor CW
 [] brushless port motor CWW
-[] Power supply : LIPO battery 2S
+[] Power supply : LIPO battery 3S
 [] Power is supplied to the two esc and to the board (5V)
 [] Power distribution circuit MATEK
 [] Led "L" of the board to indicate whether the GPS has got a fix or not
@@ -28,24 +27,24 @@
 [] Led L bright red, the GPS has got a good fix (HDOP < 1)
 [] Led L switched off, no GPS fix
 ## Receiver
-[] using PPM
-[] Channel 1 = steer - direction port/starboard ; gimbal
-[] steer mid position, both engine run at the same rotation
-[] steer left, starboard engine encreases speed, port engine decreases speed in proportion of the gimbal position
-[] steer right, starboard engine decreases speed, port engine encreases speed in proportion of the gimbal position
-[] channel 3 = throttle ; gimbal
-[] throttle mid position = neutral -> 1500 ; default position
-[] throttle high position = forward max  -> 2000
-[] throttle down position = backward max -> 1000
-[] channel 5 = two position switch
-[] switch down = autonomous mode ; default position
-[] switch up = manual position    
+[x] using PPM
+[x] Channel 1 = steer - direction port/starboard ; gimbal
+[x] steer mid position, both engine run at the same rotation
+[x] steer left, starboard engine encreases speed, port engine decreases speed in proportion of the gimbal position
+[x] steer right, starboard engine decreases speed, port engine encreases speed in proportion of the gimbal position
+[x] channel 3 = throttle ; gimbal
+[x] throttle mid position = neutral -> 1500 ; default position
+[x] throttle high position = forward max  -> 2000
+[x] throttle down position = backward max -> 1000
+[x] channel 5 = two position switch
+[x] switch down = autonomous mode ; default position
+[x] switch up = manual position    
 ## GPS
-[] When GPS has a valid fix with good HDOP (HDOP<1) the L led of the board switches on steadily, otherwise the Led blinks (GPS ON but no fix) if no GPS connexion, the LED si off
+[x] When GPS has a valid fix with good HDOP (HDOP<1) the L led of the board switches on steadily, otherwise the Led blinks slowly (GPS ON but no fix), led blinks rapidly GPS has a fix but not good enough, if no GPS connexion, the LED si off
 ## Telemetry
-[] The buoy sends information using telemetry HC12 transmission method
+[] The buoy sends information using telemetry SIK protocol
 [] Information are related to GPS current position, target position, buoy heading and HDOP.
-[] In manual mode, the target position is undefined.
+[x] In manual mode, the target position is undefined.
 ## Environment
 [] PlatformIO
 [] language CPP

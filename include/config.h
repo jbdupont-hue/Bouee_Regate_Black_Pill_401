@@ -108,6 +108,21 @@
 #define CH_CURRENT_TYPE   5  // Channel 6: Current type selector
 #define CH_CALIBRATION    6  // Channel 7: Calibration mode (compass/off/gyro)
 
+/* ===================== MANUAL CONTROL PARAMETERS ===================== */
+#define RC_DEADBAND       20     // RC dead band in microseconds (±20us from neutral)
+#define MANUAL_MAX_RANGE  200    // Max control range for manual mode (±200 PWM from neutral)
+#define MANUAL_MAX_YAW_RANGE 300 // Softer steering authority in manual mode (±200 PWM) - If too soft, increase this value and/or reduce MANUAL_STEER_EXPO
+#define MANUAL_STEER_EXPO  1.0f  // Non-linear steering response (>1.0 = softer around center) - If too soft, decrase but must remain >1.0 to have any effect
+#define MANUAL_STEER_TRIM_US 0    // Steering trim in microseconds (+ right / - left) to compensate RC center bias
+#define MANUAL_STRAIGHT_MIN_THROTTLE 35 // Enable gyro straight assist only above this throttle magnitude
+#define MANUAL_GYRO_STRAIGHT_GAIN 1.8f  // Gyro yaw-rate damping gain in manual straight-line assist
+#define MANUAL_STRAIGHT_MAX_YAW_CORR 90 // Max automatic yaw correction in manual straight-line assist
+
+/* ===================== AUTONOMOUS HOLD STABILITY ===================== */
+#define AUTO_HOLD_SOFT_BAND_M            2.0f  // Soft transition band outside hold radius (meters)
+#define AUTO_HOLD_NEAR_YAW_LIMIT         45.0f // Max yaw command near hold radius
+#define AUTO_HOLD_HEADING_DEADBAND_DEG   7.0f  // Larger heading deadband to reduce twitching
+
 /* ===================== RC MODE THRESHOLDS ===================== */
 #define RC_CALM_THRESHOLD_LOW    1300
 #define RC_CALM_THRESHOLD_HIGH   1700
