@@ -1,31 +1,31 @@
 # Autonomous_buoy_FSD
 ## Purpose is to create an autonomous buoy for regatta
-[] Once powered on, the buoy gets a fix from its gps and then stays at its current position
-[] The user can switch to manual mode any time and pilot the buoy to reach the target position.
-[] Once the target position is reached, the user switch back to autonomous mode.
-[] The buoy maintain its position on the water (Rover mode - loiter indefinitely) the behaviour is similar to ARDUPILOT for rover at target waypoint
-[] The radio transmitter can then be powered off, the buoy then stays in position
-[] Once the radio transmitter is back on, the user can switch to manual mode either to reach a new position or to return to home manually
-[] The buoy evolves either in calm waters, some water current, or in strong water current.
-[] The user use a 3 position switch to adapt the behavior of the buoy depending on current level. Default is calm waters.
+[x] Once powered on, the buoy gets a fix from its gps and then stays at its current position
+[x] The user can switch to manual mode any time and pilot the buoy to reach the target position.
+[x] Once the target position is reached, the user switch back to autonomous mode - record the postion at switch time and keeps this position.
+[x] The buoy maintain its position on the water (Rover mode - loiter indefinitely) the behaviour is similar to ARDUPILOT for rover at target waypoint
+[x] The radio transmitter can then be powered off, the buoy then stays in position
+[x] Once the radio transmitter is back on, the user can switch to manual mode either to reach a new position or to return to home manually
+[x] The buoy evolves either in calm waters, some water current, or in strong water current.
+[x] The user use a 3 position switch to adapt the behavior of the buoy depending on current level. Default is calm waters.
 ## platform
-[] STM32F401
-[] GPS QUECTEL L80-R (RX,TX)
-[] Compass IST8310
-[] Gyroscope ICM42688P
-[] OSD AT7456E
-[] Receiver flysky FRIA6B
-[] ESC starboard
-[] ESC port
-[] brushless starboard motor CW
-[] brushless port motor CWW
-[] Power supply : LIPO battery 3S
-[] Power is supplied to the two esc and to the board (5V)
-[] Power distribution circuit MATEK
-[] Led "L" of the board to indicate whether the GPS has got a fix or not
-[] Led L blinking indicates that the GPS is wired properly but has not a good fix yet (HDOP>=1)
-[] Led L bright red, the GPS has got a good fix (HDOP < 1)
-[] Led L switched off, no GPS fix
+[x] STM32F401
+[x] GPS QUECTEL L80-R (RX,TX)
+[x] Compass IST8310
+[x] Gyroscope ICM42688P
+[x] OSD AT7456E (unused)
+[x] Receiver flysky FRIA6B
+[x] ESC starboard
+[x] ESC port
+[x] brushless starboard motor CW
+[x] brushless port motor CWW
+[x] Power supply : LIPO battery 2S 6000 mA
+[x] Power is supplied to the two esc and to the board (5V)
+[x] Power distribution circuit MATEK
+[x] Led "L" of the board to indicate whether the GPS has got a fix or not
+[x] Led L blinking indicates that the GPS is wired properly but has not a good fix yet (HDOP>=1)
+[x] Led L bright red, the GPS has got a good fix (HDOP < 1)
+[x] Led L switched off, no GPS fix
 ## Receiver
 [x] using PPM
 [x] Channel 1 = steer - direction port/starboard ; gimbal
@@ -42,11 +42,11 @@
 ## GPS
 [x] When GPS has a valid fix with good HDOP (HDOP<1) the L led of the board switches on steadily, otherwise the Led blinks slowly (GPS ON but no fix), led blinks rapidly GPS has a fix but not good enough, if no GPS connexion, the LED si off
 ## Telemetry
-[] The buoy sends information using telemetry SIK protocol
-[] Information are related to GPS current position, target position, buoy heading and HDOP.
+[x] The buoy sends information using telemetry SIK protocol
+[x] Information are related to GPS current position, target position, buoy heading and HDOP.
 [x] In manual mode, the target position is undefined.
 ## Environment
-[] PlatformIO
-[] language CPP
-[] libraries include TinyGPS++
-[] libraries include IST3810 driver (custom I2C)
+[x] PlatformIO
+[x] language CPP
+[x] libraries include TinyGPS++
+[x] libraries include IST3810 driver (custom I2C)

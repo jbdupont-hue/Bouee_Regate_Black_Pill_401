@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "anemometer_for_buoy",
+			"path": "../anemometer_for_buoy"
+		}
+	],
+	"settings": {}
+}

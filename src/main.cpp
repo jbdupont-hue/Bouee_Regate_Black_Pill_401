@@ -42,6 +42,27 @@ bool driftingDetected = false;
 
 // Telemetry
 unsigned long lastTelemetryTime = 0;
+float lastManualYawCmd = 0.0f;
+float lastAutoYawCmd = 0.0f;
+unsigned long lastManualControlTime = 0;
+unsigned long lastAutoControlTime = 0;
+
+static float applySlewLimit(float target, float previous, float ratePerSec, unsigned long& lastTimeMs) {
+  unsigned long now = millis();
+  if (lastTimeMs == 0 || ratePerSec <= 0.0f) {
+    lastTimeMs = now;
+    return target;
+  }
+
+  float dt = (now - lastTimeMs) / 1000.0f;
+  lastTimeMs = now;
+  float maxStep = ratePerSec * dt;
+  float delta = target - previous;
+
+  if (delta > maxStep) return previous + maxStep;
+  if (delta < -maxStep) return previous - maxStep;
+  return target;
+}
 
 /* ===================== FORWARD DECLARATIONS ===================== */
 void setupSensors();
@@ -364,6 +385,14 @@ void processReceiver() {
   }
   
   control.setMode(newMode);
+
+  if (newMode != lastOperationMode) {
+    lastManualYawCmd = 0.0f;
+    lastAutoYawCmd = 0.0f;
+    lastManualControlTime = 0;
+    lastAutoControlTime = 0;
+  }
+
   lastOperationMode = newMode;
   
   // Get current type selector (CH6)
@@ -412,6 +441,8 @@ void processReceiver() {
 /* ===================== AUTONOMOUS MODE ===================== */
 void autonomousMode() {
   if (!gpsManager.hasValidFix()) {
+    lastAutoYawCmd = 0.0f;
+    lastAutoControlTime = 0;
     motors.stop();
     return;
   }
@@ -427,6 +458,8 @@ void autonomousMode() {
   
   // Check if at target
   if (distance < holdRadius) {
+    lastAutoYawCmd = 0.0f;
+    lastAutoControlTime = 0;
     motors.stop();
     driftingDetected = false;
     return;
@@ -477,7 +510,7 @@ void autonomousMode() {
   }
   
   // Constrain yaw command
-  yawCmd = constrain(yawCmd, -MAX_YAW, MAX_YAW);
+  yawCmd = constrain(yawCmd, -AUTO_MAX_YAW_COMMAND, AUTO_MAX_YAW_COMMAND);
   
   // Calculate thrust based on distance
   float thrust = 0.0f;
@@ -494,6 +527,22 @@ void autonomousMode() {
   }
 
   thrust = constrain(thrust, 0.0f, control.getParameters().maxThrust);
+
+  float absHeadingError = fabsf(error);
+  float headingScale = 1.0f;
+  if (absHeadingError > AUTO_HEADING_BRAKE_START_DEG) {
+    if (absHeadingError >= AUTO_HEADING_BRAKE_FULL_DEG) {
+      headingScale = AUTO_MIN_THRUST_SCALE;
+    } else {
+      float blend = (absHeadingError - AUTO_HEADING_BRAKE_START_DEG) /
+                    (AUTO_HEADING_BRAKE_FULL_DEG - AUTO_HEADING_BRAKE_START_DEG);
+      headingScale = 1.0f - blend * (1.0f - AUTO_MIN_THRUST_SCALE);
+    }
+  }
+  thrust *= headingScale;
+
+  yawCmd = applySlewLimit(yawCmd, lastAutoYawCmd, AUTO_YAW_SLEW_PER_SEC, lastAutoControlTime);
+  lastAutoYawCmd = yawCmd;
   
   // Apply motor commands
   motors.drive((int)thrust, (int)yawCmd);
@@ -512,14 +561,16 @@ void manualMode() {
   }
   
   // Apply dead band to steering
-  int yaw = 0;
+  float yaw = 0.0f;
   int steerDelta = (int)steerRC - RC_NEUTRAL - MANUAL_STEER_TRIM_US;
   if (abs(steerDelta) > RC_DEADBAND) {
     float steerSign = (steerDelta >= 0) ? 1.0f : -1.0f;
     float steerMagnitude = (float)(abs(steerDelta) - RC_DEADBAND) / (500.0f - RC_DEADBAND);
     steerMagnitude = constrain(steerMagnitude, 0.0f, 1.0f);
     float shapedMagnitude = powf(steerMagnitude, MANUAL_STEER_EXPO);
-    yaw = (int)(steerSign * shapedMagnitude * MANUAL_MAX_YAW_RANGE);
+    float yawMagnitude = MANUAL_MIN_YAW_BITE +
+                         (MANUAL_MAX_YAW_RANGE - MANUAL_MIN_YAW_BITE) * shapedMagnitude;
+    yaw = steerSign * yawMagnitude;
   }
 
   // Straight-line assist: when steering stick is centered, use gyro damping to resist unwanted yaw drift
@@ -527,16 +578,18 @@ void manualMode() {
       abs(throttle) >= MANUAL_STRAIGHT_MIN_THROTTLE &&
       gyroManager.isReady()) {
     float yawRate = gyroManager.getYawRate();
-    int yawCorrection = (int)constrain(-yawRate * MANUAL_GYRO_STRAIGHT_GAIN,
-                                       -MANUAL_STRAIGHT_MAX_YAW_CORR,
-                                       MANUAL_STRAIGHT_MAX_YAW_CORR);
+    float yawCorrection = constrain(-yawRate * MANUAL_GYRO_STRAIGHT_GAIN,
+                                    -MANUAL_STRAIGHT_MAX_YAW_CORR,
+                                    MANUAL_STRAIGHT_MAX_YAW_CORR);
     yaw += yawCorrection;
   }
 
   yaw = constrain(yaw, -MANUAL_MAX_YAW_RANGE, MANUAL_MAX_YAW_RANGE);
+  yaw = applySlewLimit(yaw, lastManualYawCmd, MANUAL_YAW_SLEW_PER_SEC, lastManualControlTime);
+  lastManualYawCmd = yaw;
   
   // Apply motor commands
-  motors.drive(throttle, yaw);
+  motors.drive(throttle, (int)yaw);
 }
 
 /* ===================== WATER CURRENT ESTIMATION ===================== */
